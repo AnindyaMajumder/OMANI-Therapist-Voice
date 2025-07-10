@@ -1,6 +1,2 @@
-torch
-transformers 
-optimum 
-accelerate
-hf_xet
-assemblyai
+python-dotenv
+elevenlabs
