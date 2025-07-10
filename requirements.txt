@@ -1,3 +1,7 @@
 python-dotenv
 elevenlabs
 faster_whisper
+openai
+sounddevice
+numpy
+threading
