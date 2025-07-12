@@ -5,3 +5,5 @@ openai
 sounddevice
 numpy
 threading
+streamlit
+audio-recorder-streamlit
