@@ -4,6 +4,7 @@ import tempfile
 from audio_recorder_streamlit import audio_recorder
 from src.transcribe_whisper import transcribe_audio  
 from src.response import response
+from src.tts import text_to_speech
 
 texts = [
             {
@@ -71,5 +72,12 @@ if __name__ == "__main__":
             })
             text = ""
         st.write(response_text)
+        # Generate and play voice response using gTTS
+        with st.spinner("Generating voice response..."):
+            audio_data = text_to_speech(response_text, lang='ar')
+            if audio_data:
+                st.audio(audio_data, format="audio/mp3")
+            else:
+                st.warning("Could not generate voice response.")
         
     print("Done with processing!")
