@@ -6,14 +6,17 @@ from src.transcribe_whisper import transcribe_audio
 from src.response import response
 from src.tts import text_to_speech
 
-texts = [
-            {
-                "role": "system",
-                "content": 
-                    "أنت أخصائي صحة نفسية متعاطف. استمع بعناية لمشاعر المستخدم، ورد دائمًا باللهجة العمانية الطبيعية. "
-                    "كن موجزًا، مشجعًا، وقدم دعمًا نفسيًا دافئًا في كل إجابة."
-            }
-        ]
+if "texts" not in st.session_state:
+    st.session_state["texts"] = [
+        {
+            "role": "system",
+            "content": (
+                "أنت أخصائي صحة نفسية متعاطف. استمع بعناية لمشاعر المستخدم، ورد دائمًا باللهجة العمانية الطبيعية. "
+                "كن موجزًا، مشجعًا، وقدم دعمًا نفسيًا دافئًا في كل إجابة."
+            )
+        }
+    ]
+texts = st.session_state["texts"]
 text = ""
 
 def recording():
@@ -58,7 +61,7 @@ if __name__ == "__main__":
         for segment in transcript:
             st.write(f"**[{segment.start:.2f}s → {segment.end:.2f}s]** {segment.text.strip()}")
             text += str(segment.text)
-            
+
         st.header("🤖 Response")
         with st.spinner("Generating response..."):
             texts.append({
@@ -70,8 +73,10 @@ if __name__ == "__main__":
                 "role": "assistant",
                 "content": response_text
             })
+            st.session_state["texts"] = texts
             text = ""
         st.write(response_text)
+        print(f"Response generated: {texts}")
         # Generate and play voice response using gTTS
         with st.spinner("Generating voice response..."):
             audio_data = text_to_speech(response_text, lang='ar')
@@ -79,5 +84,13 @@ if __name__ == "__main__":
                 st.audio(audio_data, format="audio/mp3")
             else:
                 st.warning("Could not generate voice response.")
-        
+
+        # Display chat history
+        st.header("💬 Chat History")
+        for msg in texts:
+            if msg["role"] == "user":
+                st.markdown(f"<div style='color:blue'><b>👤 User:</b> {msg['content']}</div>", unsafe_allow_html=True)
+            elif msg["role"] == "assistant":
+                st.markdown(f"<div style='color:green'><b>🤖 Therapist:</b> {msg['content']}</div>", unsafe_allow_html=True)
+
     print("Done with processing!")
